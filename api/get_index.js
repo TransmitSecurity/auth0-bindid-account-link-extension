@@ -1,12 +1,10 @@
 const { decode } = require('jsonwebtoken');
 const _ = require('lodash');
 const config = require('../lib/config');
-const findUsersByEmail = require('../lib/findUsersByEmail');
+const findUser = require('../lib/findUser');
 const indexTemplate = require('../templates/index');
 const logger = require('../lib/logger');
 const stylesheet = require('../lib/stylesheet');
-const getIdentityProviderPublicName = require('../lib/idProviders');
-const humanizeArray = require('../lib/humanize');
 const { resolveLocale } = require('../lib/locale');
 const { getSettings } = require('../lib/storage');
 
@@ -18,14 +16,6 @@ const decodeToken = token =>
       reject(e);
     }
   });
-
-const fetchUsersFromToken = ({ sub, email }) =>
-  findUsersByEmail(email).then(users => ({
-    currentUser: users.find(u => u.user_id === sub),
-    matchingUsers: users
-      .filter(u => u.user_id !== sub)
-      .sort((prev, next) => new Date(prev.created_at) - new Date(next.created_at))
-  }));
 
 module.exports = () => ({
   method: 'GET',
@@ -51,31 +41,18 @@ module.exports = () => ({
 
     decodeToken(req.query.child_token)
       .then((token) => {
-        fetchUsersFromToken(token)
-          .then(({ currentUser, matchingUsers }) => {
+        findUser(token.sub)
+          .then(currentUser => {
             getSettings().then((settings) => {
-              // if there are multiple matching users, take the oldest one
-              const userMetadata = (matchingUsers[0] && matchingUsers[0].user_metadata) || {};
+              const userMetadata = {};
               const locale = typeof userMetadata.locale === 'string' ? userMetadata.locale : settings.locale;
               resolveLocale(locale).then((t) => {
-                // FIXME: The "continue" button is always poiting to first user's identity
-                // connection, so we can't show all available alternatives in the introduction
-                // text: "You may sign in with IdP1 or IdP2 or..."
-                // A proper fix could be showing multiple "continue" links (one per existing
-                // identity) or one "continue" link with a connection selector.
-                const rawIdentities =
-                  matchingUsers.length > 0 ? [matchingUsers[0].identities[0]] : [];
-                const identities = rawIdentities
-                  .map(id => id.provider)
-                  .map(getIdentityProviderPublicName);
-                const humanizedIdentities = humanizeArray(identities, t('or'));
-
+                const humanizedIdentities = "";
+                const matchingUsers = [];
                 reply(
                   indexTemplate({
                     dynamicSettings,
                     stylesheetTag,
-                    currentUser,
-                    matchingUsers,
                     customCSSTag,
                     locale,
                     identities: humanizedIdentities
@@ -92,13 +69,13 @@ module.exports = () => ({
                 req.query.state
               }`
             );
-
+            console.log("Redirecting to contienu....")
             reply.redirect(`${token.iss}continue?state=${state}`);
           });
       })
       .catch((err) => {
         logger.error('An invalid token was provided', err);
-
+        console.l
         indexTemplate({
           dynamicSettings,
           stylesheetTag,
