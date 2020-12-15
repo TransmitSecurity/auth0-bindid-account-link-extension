@@ -6,9 +6,10 @@
   "author": "Auth0",
   "license": "MIT",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "gulp run"
   },
   "dependencies": {
+    "auth0-extension-tools": "^1.5.0",
     "body-parser": "^1.16.1",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
@@ -18,9 +19,14 @@
     "express": "^4.14.1",
     "express-session": "^1.11.3",
     "morgan": "^1.8.1",
+    "ngrok": "^3.3.0",
     "passport": "^0.3.0",
     "passport-auth0": "^0.6.0",
     "pug": "~2.0.0-beta11",
+    "request": "^2.88.2",
     "serve-favicon": "^2.4.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2"
   }
 }
