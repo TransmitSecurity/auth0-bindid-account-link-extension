@@ -4,11 +4,10 @@
     "pageMismatchError": "You seem to have reached this page in error. Please try logging in again",
     "continue": "Continue",
     "accountLinking": "Account Linking",
-    "introduction":
-      "It looks like you have another account with the same email address. We recommend you link these accounts.",
+    "introduction": "Would you like to link your BindID account with your Auth0 exising account?",
     "skipAlternativeLink": "I want to skip this and create a new account. (Not recommended)",
     "sameEmailAddressError": "Accounts must have matching email addresses. Please try again.",
-    "identities": "You may sign in with {{identities}} to link accounts",
+    "identities": "",
     "or": "or"
   },
 

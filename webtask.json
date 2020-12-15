@@ -1,17 +1,16 @@
 {
-  "title": "Auth0 Account Link",
-  "name": "auth0-account-link",
-  "version": "2.6.1",
-  "preVersion": "2.6.0",
-  "author": "auth0",
-  "description":
-    "This extension gives Auth0 customers the ability to allow their users to link their accounts",
+  "title": "BindID-Auth0 Account Link",
+  "name": "bindid-auth0-account-link",
+  "version": "1.0.0",
+  "preVersion": "1.0.0",
+  "author": "Transmit Security",
+  "description": "This extension enables linking BindID accounts with existing auth0 accounts",
   "type": "application",
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-authz/assets/logo.svg",
   "docsUrl": "https://auth0.com/docs/extensions/account-link",
   "initialUrlPath": "/login",
-  "repository": "https://github.com/auth0-extensions/auth0-account-link-extension",
-  "keywords": ["auth0", "extension", "account-link"],
+  "repository": "https://github.com/TransmitSecurity/auth0-bindid-account-link-extension",
+  "keywords": ["bindid", "auth0", "extension", "account-link"],
   "secrets": {
     "CUSTOM_CSS": {
       "description": "Add custom styles to the linking page of the extension.",
@@ -24,7 +23,6 @@
     "onUninstallPath": "/.extensions/on-uninstall",
     "onInstallPath": "/.extensions/on-install",
     "onUpdatePath": "/.extensions/on-install",
-    "scopes":
-      "read:connections read:users read:rules create:rules update:rules delete:rules delete:clients"
+    "scopes": "read:connections read:users read:rules create:rules update:rules delete:rules delete:clients"
   }
 }
