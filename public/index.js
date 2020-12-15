@@ -1,27 +1,18 @@
 /* eslint-disable */
-// Ignoring this file since it has to be written in ES5
-// and eslint is configured to lint ES6.
+const process = require('process');
 
-module.exports = function(currentUser, matchingUsers) {
+module.exports = function() {
   var params = window.Qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
   try {
     loadLinkPage(window.jwt_decode(params.child_token));
   } catch (e) {
-    console.error(e);
     loadInvalidTokenPage();
   }
 
   function loadLinkPage(token) {
     var linkEl = document.getElementById('link');
     var skipEl = document.getElementById('skip');
-    var connections = matchingUsers
-      .reduce(function(acc, user) {
-        return acc.concat(user.identities);
-      }, [])
-      .map(function(identity) {
-        return identity.connection;
-      });
 
     var authorize = function(domain, qs) {
       var query = keysForObject(qs)
@@ -36,8 +27,8 @@ module.exports = function(currentUser, matchingUsers) {
       window.location = domain + 'authorize?' + query;
     };
 
-    var updateContinueUrl = function(linkEl, domain, state) {
-      linkEl.href = domain + 'continue?state=' + state;
+    var updateContinueUrl = function(el, domain, state) {
+      el.href = domain + 'continue?state=' + state;
     };
 
     linkEl.addEventListener('click', function(e) {
@@ -52,7 +43,8 @@ module.exports = function(currentUser, matchingUsers) {
         audience: params.audience,
         link_account_token: params.child_token,
         prevent_sign_up: true,
-        connection: connections[0]
+        allowed_connections: params.allowed_connections,
+        connection: "Username-Password-Authentication" // (EW) this is require, otherwise auth0 fail the request, unfortunately with non descriptive error
       });
     });
 
