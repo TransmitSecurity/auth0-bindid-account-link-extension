@@ -1,0 +1,45 @@
+title BindID-Auth0 Flow
+
+participant User
+participant Client App
+participant Account Link Extension
+participant Auth0
+participant BindID
+
+activate User
+User->Client App: Login
+activate Client App
+Client App-->User: Authenticate with Auth0 (redirect)
+deactivate Client App
+User->Auth0: Authorize (authenticate to Client App)
+activate Auth0
+Auth0-->User: Client App Login Page
+User->Auth0: Login with BindID
+Auth0-->User: Authenticate with BindID (redirect)
+User->BindID: Authorize
+activate BindID
+==BindID Authentication==
+BindID-->User: Redirect to auth0 + auth code
+deactivate BindID
+User->Auth0: Success BindID Auth + auth code
+Auth0-->Auth0: Token exchange + user info
+Auth0-->Auth0: Run rules - redirect user to bindid account linking
+note over Auth0: redirect uri contains a jwt token param \n  with the authenticated user details
+deactivate Auth0
+User->Account Link Extension: Redirect to account linking extension main page
+activate Account Link Extension
+Account Link Extension-->User: Display info and consent
+User->Account Link Extension: Continue
+Account Link Extension-->User: Authenticate with Auth0 (redirect)
+note over Account Link Extension: Authenticate to Client App with limited connections \naccording to config and no sign-up option
+deactivate Account Link Extension
+User->Auth0: Authorize (authenticate to Client App)
+activate Auth0
+Auth0-->User: Client App Login Page
+User->Auth0: Authenticate with Username-Password / Google etc.
+Auth0-->Auth0: Run rules - link accounts
+note over Auth0: Account A - Current user \nAccount B - User from the jwt param
+Auth0-->User: Redirect to original app (i.e. Client A Application) with the unified user
+User->Client App: Redirect to callback with auth code
+
+

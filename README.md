@@ -9,6 +9,7 @@ with an existing auth0 account.
 
 ![image](docs/images/bindid-auth0-flow.png)
 
+** created with https://sequencediagram.org/
 ## Running in Development
 
 Update/Create the configuration file under `./server/config.json`:
