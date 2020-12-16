@@ -1,6 +1,7 @@
 {
   "name": "auth0-account-link-extension",
   "version": "1.0.0",
+  "stylesheet_version": "2.6.1",
   "description": "Auth0 Account Link Extension",
   "main": "index.js",
   "engines": {
