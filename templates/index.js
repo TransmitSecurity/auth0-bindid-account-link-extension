@@ -14,9 +14,9 @@ const render = (template, locals = {}) => {
 };
 
 module.exports = ({
-  stylesheetTag, customCSSTag, dynamicSettings, identities, locale
+  stylesheetTag, customCSSTag, dynamicSettings, locale
 }) =>
-  Promise.all([buildAuth0Widget(dynamicSettings, identities, locale), getStorage().read()])
+  Promise.all([buildAuth0Widget(dynamicSettings, locale), getStorage().read()])
     .then(([widget, data]) => {
       const template = data.settings ? data.settings.template : defaultTemplate;
 

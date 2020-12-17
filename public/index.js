@@ -12,7 +12,6 @@ module.exports = function() {
 
   function loadLinkPage(token) {
     var linkEl = document.getElementById('link');
-    var skipEl = document.getElementById('skip');
 
     var authorize = function(domain, qs) {
       var query = keysForObject(qs)
@@ -27,10 +26,6 @@ module.exports = function() {
       window.location = domain + 'authorize?' + query;
     };
 
-    var updateContinueUrl = function(el, domain, state) {
-      el.href = domain + 'continue?state=' + state;
-    };
-
     linkEl.addEventListener('click', function(e) {
       authorize(token.iss, {
         client_id: params.client_id,
@@ -42,13 +37,10 @@ module.exports = function() {
         nonce: params.nonce,
         audience: params.audience,
         link_account_token: params.child_token,
-        prevent_sign_up: true,
         allowed_connections: params.allowed_connections,
         connection: "Username-Password-Authentication" // (EW) this is require, otherwise auth0 fail the request, unfortunately with non descriptive error
       });
     });
-
-    updateContinueUrl(skipEl, token.iss, params.state);
 
     if (params.error_type === 'accountMismatch') {
       loadAccountMismatchError();
@@ -57,7 +49,6 @@ module.exports = function() {
 
   function loadInvalidTokenPage() {
     var containerEl = document.getElementById('content-container');
-    var labelEl = document.getElementById('label-value');
     var linkEl = document.getElementById('link');
 
     containerEl.innerHTML = '';

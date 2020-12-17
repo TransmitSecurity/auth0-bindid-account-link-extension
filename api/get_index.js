@@ -42,23 +42,18 @@ module.exports = () => ({
     decodeToken(req.query.child_token)
       .then((token) => {
         findUser(token.sub)
-          .then(currentUser => {
+          .then(_ => {
             getSettings().then((settings) => {
               const userMetadata = {};
               const locale = typeof userMetadata.locale === 'string' ? userMetadata.locale : settings.locale;
-              resolveLocale(locale).then((t) => {
-                const humanizedIdentities = "";
-                const matchingUsers = [];
-                reply(
-                  indexTemplate({
-                    dynamicSettings,
-                    stylesheetTag,
-                    customCSSTag,
-                    locale,
-                    identities: humanizedIdentities
-                  })
-                );
-              });
+              reply(
+                indexTemplate({
+                  dynamicSettings,
+                  stylesheetTag,
+                  customCSSTag,
+                  locale
+                })
+              );
             });
           })
           .catch((err) => {

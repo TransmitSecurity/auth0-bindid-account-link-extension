@@ -52,7 +52,7 @@ const getSubmitButton = (settings, t) => {
     </button>`;
 };
 
-module.exports = (dynamicSettings, identities, locale = 'en') =>
+module.exports = (dynamicSettings, locale = 'en') =>
   getSettings().then(storedSettings => {
     const settings = Object.assign(storedSettings, dynamicSettings);
     return resolveLocale(locale).then(t => `
@@ -89,11 +89,7 @@ module.exports = (dynamicSettings, identities, locale = 'en') =>
                                                 <p id="message">
                                                     ${t('introduction')}
                                                 </p>
-                                                <p class="auth0-lock-alternative">
-                                                    <a class="auth0-lock-alternative-link" id="skip" href="#">
-                                                    ${t('skipAlternativeLink')}
-                                                    </a>
-                                                </p>
+                                               
                                                 </div>
                                             </div>
                                             </div>
