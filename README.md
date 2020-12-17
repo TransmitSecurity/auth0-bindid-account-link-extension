@@ -55,34 +55,46 @@ npm run serve:dev
 
 1. Open Auth0 management console
 2. Go to **Rules** sub-menu
-3. Define the following key-values under the **Settings** section:
-   
+3. Define the following config to the **Settings** section:
+
+* key: `bindid_account_link_config`
+* value: a json containing the account linking config with the following values:
+
+
 | Key  	| Description | example
 |---	|---	|---	|	
-|  `bindid_connection` 	| The name of the your bindid connection used to detect bindid logins in order to suggest account linking  	|  `bindid-idp` 	|   	
-|  `linkable_connections` 	|  A comma-seperated (no spaces) list of connection names that will be considered eligible for account linking, when performing the BindID account linking only those options will be available for the user. 	|  `Username-Password-Authentication,google-oauth2`  	|  
+|  `bindid_connection` 	| The name of the your bindid connection used to detect bindid logins in order to perform account linking  	|  `"bindid-idp"` 	|   	
+|  `linkable_connections` 	|  An array of connection names that will be considered eligible for account linking, when performing the BindID account linking only those options will be available for the user. 	|  `["Username-Password-Authentication", "google-oauth2"]`  	|  
+| `bindid_client_id` | Your BindID client ID | `"bid_demo_account_linking"`
+| `bindid_client_secret` | Your BindID client secret | `"top-secret"`
+| `bindid_api_url` | The BindID API URL, used for attaching an alias to the user on BindID after successful account linking | `"https://api.bindid-sandbox.io"`
+
+#### Example
+
+```js
+{
+  "bindid_connection": "BindID",
+  "linkable_connections": [
+    "Username-Password-Authentication",
+    "google-oauth2"
+  ],
+  "bindid_client_id": "bid_demo_account_linking",
+  "bindid_client_secret": "top-secret",
+  "bindid_api_url": "https://api.bindid-sandbox.io"
+}
+```
 
 ### Update Universal Login Page
 
-In order to limit the allowed connections in the account linking and disable sign-up, add the following to your universal login page config (found **Universal Login->Login Tab**):
+In order to limit the allowed connections in the account linking, add the following to your universal login page config (found **Universal Login->Login Tab**):
 
 1. Define the allowed connections at the start of the script:
 ```js 
-...
 var allowedConnections = config.extraParams.allowed_connections || "";
-...
 ```
 2. Add the following field to the `Auth0Lock` options:
 ```js
-...
 allowedConnections: allowedConnections ? allowedConnections.split(',') : null,
-...
-```
-3. In order to disable Sign-up availability as part of the account linking, add the following field to the `Auth0Lock` options:
-```js
-...
-allowSignUp: !config.extraParams.prevent_sign_up,
-...
 ```
 
 ## Running puppeteer tests

@@ -13,14 +13,15 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
       var queryString = require('querystring');
       var Promise = require('native-or-bluebird@1.2.0');
       var jwt = require('jsonwebtoken@7.1.9');
+      var crypto = require('crypto');
 
       var CONTINUE_PROTOCOL = 'redirect-callback';
       var LOG_TAG = '[ACCOUNT_LINK]: ';
-      var bindidConnectionName = configuration.bindid_connection;
-      const linkableConnections = configuration.linkable_connections;
 
       // 'query' can be undefined when using '/oauth/token' to log in
       context.request.query = context.request.query || {};
+
+      const accountLinkConfig = JSON.parse(configuration.bindid_account_link_config);
 
       var config = {
         endpoints: {
@@ -78,12 +79,11 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
           }
 
           function isBindIDAuth() {
-            return context.connection === bindidConnectionName;
+            return context.connection === accountLinkConfig.bindid_connection;
           }
 
           function isAlreadyBound() {
-            const linkableConnectionsArr = linkableConnections.split(',');
-            return user.identities.some((identity) => linkableConnectionsArr.includes(identity.connection));          
+            return user.identities.some((identity) => accountLinkConfig.linkable_connections.includes(identity.connection));          
           }
         }
       }
@@ -129,12 +129,49 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
                     provider: provider
                   }
                 });
+                return Promise.resolve();
               })
               .then(function(_) {
                 console.info(LOG_TAG, 'Successfully linked accounts for user: ', user.user_id);
-                return _;
+                return addAliasToBindidUser(decodedToken.access_token, user.email);
               });
           });
+      }
+
+      function addAliasToBindidUser(bindidAccessToken, alias) {
+        return new Promise(function(resolve, reject) {
+          const hmac = crypto.createHmac('sha256', accountLinkConfig.bindid_client_secret)
+                             .update(bindidAccessToken)
+                             .digest('base64');
+          var reqOptions = {
+            url: accountLinkConfig.bindid_api_url + '/session-feedback',
+            method: 'POST',
+            headers: {
+              Authorization: 'BindIdBackend AccessToken ' + hmac,
+              Accept: 'application/json'
+            },
+            json: true,
+            body: {
+              subject_session_at: bindidAccessToken, 
+              reports: [{
+                type: 'authentication_performed',
+                time: Math.floor(Date.now() / 1000),
+                alias: alias
+              }]
+            }
+          };
+
+          request(reqOptions, function handleResponse(err, response, body) {
+            if (err) {
+              resolve(); // don't fail process
+            } else if (response.statusCode < 200 || response.statusCode >= 300) {
+              console.error(LOG_TAG, 'Failed to attach alias: ', body);
+              resolve(); // don't fail process 
+            } else {
+              resolve(response.body);
+            }
+          });
+        });
       }
 
       function continueAuth() {
@@ -163,6 +200,7 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
       }
 
       function createToken(tokenInfo) {
+        const bindidAccessToken = user.identities.find(identity => identity.connection === accountLinkConfig.bindid_connection).access_token;
         var options = {
           expiresIn: '5m',
           audience: tokenInfo.clientId,
@@ -171,6 +209,7 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
 
         var userSub = {
           sub: user.user_id,
+          access_token: bindidAccessToken,
           base: auth0.baseUrl
         };
 
@@ -191,7 +230,7 @@ module.exports = ({ extensionURL = '', username = 'Unknown', clientID = '', clie
           original_state: q.original_state || q.state,
           nonce: q.nonce,
           error_type: errorType,
-          allowed_connections: linkableConnections
+          allowed_connections: accountLinkConfig.linkable_connections.join(',')
         };
 
         return config.endpoints.linking + '?' + queryString.encode(params);
