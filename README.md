@@ -49,12 +49,53 @@ npm run build
 npm run serve:dev
 ```
 
+## BindID Social Connection
+
+Use the following **Fetch User Info** snippet when defining the BindID connection. <br>
+**NOTE:** You need to replace the `url` with the BindID server you are working with.
+
+```js
+
+function(accessToken, ctx, cb) {
+    request({
+      method: 'GET',
+      url: 'https://{BINDID_SERVER}/api/v2/oidc/bindid-oidc/userinfo',
+      headers: {
+       	Authorization: 'Bearer ' + accessToken 
+      }
+    }, (err, resp, body) => {
+      if (err) {
+        return cb(err);
+      }
+
+      if (resp.statusCode !== 200) {
+        return cb(new Error(body));
+      }
+
+      let userInfo;
+      try {
+        userInfo = JSON.parse(body);
+      } catch (jsonError) {
+        return cb(new Error(body));
+      }
+
+      const profile = {
+        user_id: userInfo.sub,
+        access_token: accessToken
+      };
+
+      cb(null, profile);
+    });
+  }
+```
+
+
 ## Auth0 Configurations
 
 ### Configuring Linkable Connections
 
 1. Open Auth0 management console
-2. Go to **Rules** sub-menu
+2. Go to **Auth Pipeline->Rules** 
 3. Define the following config to the **Settings** section:
 
 * key: `bindid_account_link_config`
@@ -86,7 +127,7 @@ npm run serve:dev
 
 ### Update Universal Login Page
 
-In order to limit the allowed connections in the account linking, add the following to your universal login page config (found **Universal Login->Login Tab**):
+In order to limit the allowed connections in the account linking, add the following to your universal login page config (found **Branding->Universal Login->Login Tab**):
 
 1. Define the allowed connections at the start of the script:
 ```js 
@@ -95,13 +136,4 @@ var allowedConnections = config.extraParams.allowed_connections || "";
 2. Add the following field to the `Auth0Lock` options:
 ```js
 allowedConnections: allowedConnections ? allowedConnections.split(',') : null,
-```
-
-## Running puppeteer tests
-
-In order to run the tests you'll have to [start the extension server locally](https://github.com/auth0-extensions/auth0-account-link-extension#running-in-development), fill the `config.test.json` file (normally with the same data as the `config.json` file) and run the Sample Test application located in `sample-app/` (create a dedicated client for this app).
-
-Then, you can run the tests running:
-```bash
-yarn test
 ```

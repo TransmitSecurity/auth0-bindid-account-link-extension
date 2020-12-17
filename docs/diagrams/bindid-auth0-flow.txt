@@ -39,6 +39,8 @@ Auth0-->User: Client App Login Page
 User->Auth0: Authenticate with Username-Password / Google etc.
 Auth0-->Auth0: Run rules - link accounts
 note over Auth0: Account A - Current user \nAccount B - User from the jwt param
+Auth0-->BindID: Add user alias
+note over BindID: Using User A (i.e. the Auth0 authenticated user) \nemail address as the BindID alias
 Auth0-->User: Redirect to original app (i.e. Client A Application) with the unified user
 User->Client App: Redirect to callback with auth code
 
