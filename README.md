@@ -161,10 +161,10 @@ Update/Create the configuration file under `./server/config.json`:
 
 ```json
 {
-  "EXTENSION_SECRET": "d2h8f03wghjti404-gjfeqihu0cre",
+  "EXTENSION_SECRET": "d2h8f03...",
   "AUTH0_DOMAIN": "dev-iiazsytr.us.auth0.com",
-  "AUTH0_CLIENT_ID": "U62nbDAvjevqj63HJzPQD0NxUhfZv3g8",
-  "AUTH0_CLIENT_SECRET": "Lv6h8CfiLkLqbrDfQMz3dfcY2Gk30SHVG5BaJo-RLB42xoJeSe3PEuazfs-6UacC",
+  "AUTH0_CLIENT_ID": "U62nbDA...",
+  "AUTH0_CLIENT_SECRET": "Lv6h8Cf...",
   "WT_URL": "http://localhost:3000",
   "AUTH0_CALLBACK_URL": "http://localhost:3000/callback",
   "AUTH0_RTA": "dev-iiazsytr.us.auth0.com"
