@@ -22,7 +22,7 @@
     "ngrok": "^3.3.0",
     "passport": "^0.3.0",
     "passport-auth0": "^0.6.0",
-    "pug": "~2.0.0-beta11",
+    "pug": "~3.0.1",
     "request": "^2.88.2",
     "serve-favicon": "^2.4.0"
   },
